@@ -35,7 +35,7 @@ function Clear-MergeEnvironment
 function Set-MergeTool ($Executable)
 {
   # The user may only specify a file.
-  Test-Path $Executable -PathType Leaf -ErrorAction Stop
+  $null = Test-Path $Executable -PathType Leaf -ErrorAction Stop
   $Executable = Get-Item $Executable
   [Environment]::SetEnvironmentVariable("MergeEnv_MergeTool", $Executable, "User")
 }
