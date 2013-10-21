@@ -1,5 +1,21 @@
 ﻿function Write-MergeEnvironment
 {
+<#
+.SYNOPSIS
+Display the current setup of the merge environment.
+
+.DESCRIPTION
+This Cmdlet simply displays the current setup of the merge environment.
+For this it will print the values of the following user environment variables:
+  MergeEnv_Base
+  MergeEnv_Source
+  MergeEnv_Target
+
+"Base" usually contains the current customer source code.
+"Source" usually contains the source code which has to be merged into the customer version.
+"Target" will contain the merge output.
+#>
+
   Write-Host "Current merge environment setup:"
   Write-Host "Base  : " $([Environment]::GetEnvironmentVariable("MergeEnv_Base", "User"))
   Write-Host "Source: " $([Environment]::GetEnvironmentVariable("MergeEnv_Source", "User"))
