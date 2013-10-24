@@ -53,42 +53,41 @@ Define three folders for the current merge project.
     [Parameter(Mandatory=$false,
                ValueFromPipeline=$false)]
     [ValidateScript({Test-Path $_ -PathType 'Container'})]
-    $Base,
+    [string]
+    $BasePath,
     
     [Parameter(Mandatory=$false,
                ValueFromPipeline=$false)]
     [ValidateScript({Test-Path $_ -PathType 'Container'})]
-    $Source,
+    [string]
+    $SourcePath,
     
     [Parameter(Mandatory=$false,
                ValueFromPipeline=$false)]
     [ValidateScript({Test-Path $_ -PathType 'Container'})]
-    $Target
+    [string]
+    $TargetPath
   )
   
-  # The user may only specify folders.
-  #$null = Test-Path $Base -PathType Container -ErrorAction Stop
-  #$null = Test-Path $Source -PathType Container -ErrorAction Stop
-  #$null = Test-Path $Target -PathType Container -ErrorAction Stop
-  
-  if ($Base -ne $null)
+  if ($BasePath -ne '')
   {
-    $Base = (Get-Item $Base).FullName
-    [Environment]::SetEnvironmentVariable("MergeEnv_Base", $Base, "User")
-    #setUserEnvVar($script:ME_BASE, $Base)
+    $BasePath = (Get-Item $BasePath).FullName
+    [Environment]::SetEnvironmentVariable("MergeEnv_Base", $BasePath, "User")
+    #setUserEnvVar("MergeEnv_Base", $BasePath)
+    Write-Verbose "Set `"MergeEnv_Base`" to: $BasePath" 
   }
-  if ($Source -ne $null)
+  if ($SourcePath -ne '')
   {
-    $Source = (Get-Item $Source).FullName
-    [Environment]::SetEnvironmentVariable("MergeEnv_Source", $Source, "User")
+    $SourcePath = (Get-Item $SourcePath).FullName
+    [Environment]::SetEnvironmentVariable("MergeEnv_Source", $SourcePath, "User")
+    Write-Verbose "Set `"MergeEnv_Source`" to: $SourcePath" 
   }
-  if ($Target -ne $null)
+  if ($TargetPath -ne '')
   {
-    $Target = (Get-Item $Target).FullName
-    [Environment]::SetEnvironmentVariable("MergeEnv_Target", $Target, "User")
+    $TargetPath = (Get-Item $TargetPath).FullName
+    [Environment]::SetEnvironmentVariable("MergeEnv_Target", $TargetPath, "User")
+    Write-Verbose "Set `"MergeEnv_Target`" to: $TargetPath" 
   }
-  
-  Write-MergeEnvironment
 }
 
 function Clear-MergeEnvironment
