@@ -1,4 +1,24 @@
-﻿function Write-MergeEnvironment
+﻿$script:ME_BASE = "MergeEnv_Base"
+$script:ME_SOURCE = "MergeEnv_Source"
+$script:ME_TARGET = "MergeEnv_Target"
+
+
+
+# Utility functions /////////////////////////////////////////////////
+function setUserEnvVar ($Name, $Value)
+{
+    [Environment]::SetEnvironmentVariable($Name, $Value, "User")
+}
+
+function getUserEnvVar ($Name)
+{
+    [Environment]::GetEnvironmentVariable($Name, "User")
+}
+# Utility functions \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+
+
+function Write-MergeEnvironment
 {
 <#
 .SYNOPSIS
@@ -22,20 +42,51 @@ For this it will print the values of the following user environment variables:
   Write-Host "Target: " $([Environment]::GetEnvironmentVariable("MergeEnv_Target", "User"))
 }
 
-function Set-MergeEnvironment ($Base, $Source, $Target)
+function Set-MergeEnvironment
 {
+<#
+.SYNOPSIS
+Define three folders for the current merge project.
+#>
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory=$false,
+               ValueFromPipeline=$false)]
+    [ValidateScript({Test-Path $_ -PathType 'Container'})]
+    $Base,
+    
+    [Parameter(Mandatory=$false,
+               ValueFromPipeline=$false)]
+    [ValidateScript({Test-Path $_ -PathType 'Container'})]
+    $Source,
+    
+    [Parameter(Mandatory=$false,
+               ValueFromPipeline=$false)]
+    [ValidateScript({Test-Path $_ -PathType 'Container'})]
+    $Target
+  )
+  
   # The user may only specify folders.
-  $null = Test-Path $Base -PathType Container -ErrorAction Stop
-  $null = Test-Path $Source -PathType Container -ErrorAction Stop
-  $null = Test-Path $Target -PathType Container -ErrorAction Stop
-
-  $Base = Get-Item $Base
-  $Source = Get-Item $Source
-  $Target = Get-Item $Target
-
-  [Environment]::SetEnvironmentVariable("MergeEnv_Base", $Base, "User")
-  [Environment]::SetEnvironmentVariable("MergeEnv_Source", $Source, "User")
-  [Environment]::SetEnvironmentVariable("MergeEnv_Target", $Target, "User")
+  #$null = Test-Path $Base -PathType Container -ErrorAction Stop
+  #$null = Test-Path $Source -PathType Container -ErrorAction Stop
+  #$null = Test-Path $Target -PathType Container -ErrorAction Stop
+  
+  if ($Base -ne $null)
+  {
+    $Base = (Get-Item $Base).FullName
+    [Environment]::SetEnvironmentVariable("MergeEnv_Base", $Base, "User")
+    #setUserEnvVar($script:ME_BASE, $Base)
+  }
+  if ($Source -ne $null)
+  {
+    $Source = (Get-Item $Source).FullName
+    [Environment]::SetEnvironmentVariable("MergeEnv_Source", $Source, "User")
+  }
+  if ($Target -ne $null)
+  {
+    $Target = (Get-Item $Target).FullName
+    [Environment]::SetEnvironmentVariable("MergeEnv_Target", $Target, "User")
+  }
   
   Write-MergeEnvironment
 }
@@ -126,4 +177,4 @@ New-Alias -Name startms -Value Start-MergeSession
 New-Alias -Name stopms -Value Stop-MergeSession
 
 Export-ModuleMember `
-  -Function * -Alias * -Cmdlet *
+  -Function *Merge* -Alias * -Cmdlet *
