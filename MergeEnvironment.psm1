@@ -5,7 +5,7 @@ $script:ME_TARGET = "MergeEnv_Target"
 
 
 # Utility functions /////////////////////////////////////////////////
-function setUserEnvVar ([string]$Name, $Value)
+function setUserEnvVar ([string]$Name, [string]$Value)
 {
     [Environment]::SetEnvironmentVariable($Name, $Value, "User")
 }
@@ -16,7 +16,7 @@ function getUserEnvVar ([string]$Name)
 }
 # Utility functions \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-
+$Value
 
 function Write-MergeEnvironment
 {
@@ -51,19 +51,22 @@ Define three folders for the current merge project.
   [CmdletBinding()]
   param(
     [Parameter(Mandatory=$false,
-               ValueFromPipeline=$false)]
+               ValueFromPipeline=$false,
+               Position=0)]
     [ValidateScript({Test-Path $_ -PathType 'Container'})]
     [string]
     $BasePath,
     
     [Parameter(Mandatory=$false,
-               ValueFromPipeline=$false)]
+               ValueFromPipeline=$false,
+               Position=1)]
     [ValidateScript({Test-Path $_ -PathType 'Container'})]
     [string]
     $SourcePath,
     
     [Parameter(Mandatory=$false,
-               ValueFromPipeline=$false)]
+               ValueFromPipeline=$false,
+               Position=2)]
     [ValidateScript({Test-Path $_ -PathType 'Container'})]
     [string]
     $TargetPath
@@ -73,20 +76,22 @@ Define three folders for the current merge project.
   {
     $BasePath = (Get-Item $BasePath).FullName
     [Environment]::SetEnvironmentVariable("MergeEnv_Base", $BasePath, "User")
-    #setUserEnvVar("MergeEnv_Base", $BasePath)
-    Write-Verbose "Set `"MergeEnv_Base`" to: $BasePath" 
+    #setUserEnvVar("MergeEnv_Base", $BasePath)  # This doesn't work. I don't know why.
+    Write-Verbose "Set `"MergeEnv_Base`" to: $(getUserEnvVar("MergeEnv_Base"))" 
   }
   if ($SourcePath -ne '')
   {
     $SourcePath = (Get-Item $SourcePath).FullName
     [Environment]::SetEnvironmentVariable("MergeEnv_Source", $SourcePath, "User")
-    Write-Verbose "Set `"MergeEnv_Source`" to: $SourcePath" 
+    #setUserEnvVar("MergeEnv_Source", $SourcePath)  # This doesn't work. I don't know why.
+    Write-Verbose "Set `"MergeEnv_Source`" to: $(getUserEnvVar("MergeEnv_Source"))" 
   }
   if ($TargetPath -ne '')
   {
     $TargetPath = (Get-Item $TargetPath).FullName
     [Environment]::SetEnvironmentVariable("MergeEnv_Target", $TargetPath, "User")
-    Write-Verbose "Set `"MergeEnv_Target`" to: $TargetPath" 
+    #setUserEnvVar("MergeEnv_Target", $TargetPath)  # This doesn't work. I don't know why.
+    Write-Verbose "Set `"MergeEnv_Target`" to: $(getUserEnvVar("MergeEnv_Target"))" 
   }
 }
 
@@ -176,4 +181,4 @@ New-Alias -Name startms -Value Start-MergeSession
 New-Alias -Name stopms -Value Stop-MergeSession
 
 Export-ModuleMember `
-  -Function *Merge* -Alias * -Cmdlet *
+  -Function *Merge*, setUserEnvVar, getUserEnvVar -Alias * -Cmdlet *
