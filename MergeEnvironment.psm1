@@ -5,12 +5,12 @@ $script:ME_TARGET = "MergeEnv_Target"
 
 
 # Utility functions /////////////////////////////////////////////////
-function setUserEnvVar ($Name, $Value)
+function setUserEnvVar ([string]$Name, $Value)
 {
     [Environment]::SetEnvironmentVariable($Name, $Value, "User")
 }
 
-function getUserEnvVar ($Name)
+function getUserEnvVar ([string]$Name)
 {
     [Environment]::GetEnvironmentVariable($Name, "User")
 }
@@ -36,10 +36,10 @@ For this it will print the values of the following user environment variables:
 "Target" will contain the merge output.
 #>
 
-  Write-Host "Current merge environment setup:"
-  Write-Host "Base  : " $([Environment]::GetEnvironmentVariable("MergeEnv_Base", "User"))
-  Write-Host "Source: " $([Environment]::GetEnvironmentVariable("MergeEnv_Source", "User"))
-  Write-Host "Target: " $([Environment]::GetEnvironmentVariable("MergeEnv_Target", "User"))
+  Write-Host "Current merge environment:"
+  Write-Host "Base  : " $(getUserEnvVar("MergeEnv_Base"))
+  Write-Host "Source: " $(getUserEnvVar("MergeEnv_Source"))
+  Write-Host "Target: " $(getUserEnvVar("MergeEnv_Target"))
 }
 
 function Set-MergeEnvironment
