@@ -77,7 +77,7 @@ Define three folders for the current merge project.
     $BasePath = (Get-Item $BasePath).FullName
     [Environment]::SetEnvironmentVariable("MergeEnv_Base", $BasePath, "User")
     #setUserEnvVar("MergeEnv_Base", $BasePath)  # This doesn't work. I don't know why.
-    Write-Verbose "Set `"MergeEnv_Base`" to: $(getUserEnvVar("MergeEnv_Base"))" 
+    Write-Verbose "Set `"MergeEnv_Base`" to: $(getUserEnvVar('MergeEnv_Base'))" 
   }
   if ($SourcePath -ne '')
   {
@@ -178,7 +178,9 @@ Write-MergeEnvironment
 
 
 New-Alias -Name startms -Value Start-MergeSession
+New-Alias -Name sms -Value Start-MergeSession -Description "Start-MergeSession"
 New-Alias -Name stopms -Value Stop-MergeSession
+New-Alias -Name ems -Value Stop-MergeSession -Description "End-MergeSession; Alternative zu Stop-MergeSession"
 
 Export-ModuleMember `
   -Function *Merge*, setUserEnvVar, getUserEnvVar -Alias * -Cmdlet *
