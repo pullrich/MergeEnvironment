@@ -4,7 +4,8 @@ $script:ME_TARGET = "MergeEnv_Target"
 
 
 
-# Utility functions /////////////////////////////////////////////////
+#region Helper functions.
+
 function setUserEnvVar ([string]$Name, [string]$Value)
 {
     [Environment]::SetEnvironmentVariable($Name, $Value, "User")
@@ -14,9 +15,10 @@ function getUserEnvVar ([string]$Name)
 {
     [Environment]::GetEnvironmentVariable($Name, "User")
 }
-# Utility functions \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-$Value
+#endregion
+
+
 
 function Show-MergeEnvironment
 {
