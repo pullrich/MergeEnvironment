@@ -18,7 +18,7 @@ function getUserEnvVar ([string]$Name)
 
 $Value
 
-function Write-MergeEnvironment
+function Show-MergeEnvironment
 {
 <#
 .SYNOPSIS
@@ -37,9 +37,9 @@ For this it will print the values of the following user environment variables:
 #>
 
   Write-Host "Current merge environment:"
-  Write-Host "Base  : " $(getUserEnvVar("MergeEnv_Base"))
-  Write-Host "Source: " $(getUserEnvVar("MergeEnv_Source"))
-  Write-Host "Target: " $(getUserEnvVar("MergeEnv_Target"))
+  Write-Host "Base  : " $(getUserEnvVar($script:ME_BASE))
+  Write-Host "Source: " $(getUserEnvVar($script:ME_SOURCE))
+  Write-Host "Target: " $(getUserEnvVar($script:ME_TARGET))
 }
 
 function Set-MergeEnvironment
@@ -100,7 +100,7 @@ function Clear-MergeEnvironment
   [Environment]::SetEnvironmentVariable("MergeEnv_Base", $null, "User")
   [Environment]::SetEnvironmentVariable("MergeEnv_Source", $null, "User")
   [Environment]::SetEnvironmentVariable("MergeEnv_Target", $null, "User")
-  Write-MergeEnvironment
+  Show-MergeEnvironment
 }
 
 function Set-MergeTool ($Executable)
@@ -174,7 +174,7 @@ function Stop-MergeSession
 }
 
 # Run stuff on Import-Module
-Write-MergeEnvironment
+Show-MergeEnvironment
 
 
 New-Alias -Name startms -Value Start-MergeSession
