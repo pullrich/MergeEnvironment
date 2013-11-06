@@ -8,14 +8,18 @@ $script:ME_TARGET = "MergeEnv_Target"
 
 function setUserEnvVar ([string]$Name, [string]$Value)
 {
-    [Environment]::SetEnvironmentVariable($Name, $Value, "User")
+  [Environment]::SetEnvironmentVariable($Name, $Value, "User")
 }
 
 function getUserEnvVar ([string]$Name)
 {
-    [Environment]::GetEnvironmentVariable($Name, "User")
+  [Environment]::GetEnvironmentVariable($Name, "User")
 }
 
+function msgUserEnvVarSetTo([string]$varName)
+{
+  "Set user environment variable `"{0}`" to: {1}" -f $varName, $(getUserEnvVar($varName))
+}
 #endregion
 
 
@@ -79,21 +83,21 @@ Define three folders for the current merge project.
     $BasePath = (Get-Item $BasePath).FullName
     [Environment]::SetEnvironmentVariable("MergeEnv_Base", $BasePath, "User")
     #setUserEnvVar("MergeEnv_Base", $BasePath)  # This doesn't work. I don't know why.
-    Write-Verbose "Set `"MergeEnv_Base`" to: $(getUserEnvVar('MergeEnv_Base'))" 
+    Write-Verbose (msgUserEnvVarSetTo($script:ME_BASE))
   }
   if ($SourcePath -ne '')
   {
     $SourcePath = (Get-Item $SourcePath).FullName
     [Environment]::SetEnvironmentVariable("MergeEnv_Source", $SourcePath, "User")
     #setUserEnvVar("MergeEnv_Source", $SourcePath)  # This doesn't work. I don't know why.
-    Write-Verbose "Set `"MergeEnv_Source`" to: $(getUserEnvVar("MergeEnv_Source"))" 
+    Write-Verbose (msgUserEnvVarSetTo($script:ME_SOURCE))
   }
   if ($TargetPath -ne '')
   {
     $TargetPath = (Get-Item $TargetPath).FullName
     [Environment]::SetEnvironmentVariable("MergeEnv_Target", $TargetPath, "User")
     #setUserEnvVar("MergeEnv_Target", $TargetPath)  # This doesn't work. I don't know why.
-    Write-Verbose "Set `"MergeEnv_Target`" to: $(getUserEnvVar("MergeEnv_Target"))" 
+    Write-Verbose (msgUserEnvVarSetTo($script:ME_TARGET))
   }
 }
 
@@ -175,8 +179,6 @@ function Stop-MergeSession
   }
 }
 
-# Run stuff on Import-Module
-Show-MergeEnvironment
 
 
 New-Alias -Name startms -Value Start-MergeSession
@@ -186,3 +188,8 @@ New-Alias -Name ems -Value Stop-MergeSession -Description "End-MergeSession; Alt
 
 Export-ModuleMember `
   -Function *Merge*, setUserEnvVar, getUserEnvVar -Alias * -Cmdlet *
+
+
+# Run stuff on Import-Module
+Show-MergeEnvironment
+  
