@@ -20,6 +20,7 @@ function msgUserEnvVarSetTo([string]$varName)
 {
   "Set user environment variable `"{0}`" to: {1}" -f $varName, $(getUserEnvVar($varName))
 }
+
 #endregion
 
 
@@ -43,9 +44,9 @@ For this it will print the values of the following user environment variables:
 #>
 
   Write-Host "Current merge environment:"
-  Write-Host "Base  : " $(getUserEnvVar($script:ME_BASE))
-  Write-Host "Source: " $(getUserEnvVar($script:ME_SOURCE))
-  Write-Host "Target: " $(getUserEnvVar($script:ME_TARGET))
+  Write-Host "Base  : " (getUserEnvVar $script:ME_BASE)
+  Write-Host "Source: " (getUserEnvVar $script:ME_SOURCE)
+  Write-Host "Target: " (getUserEnvVar $script:ME_TARGET)
 }
 
 function Set-MergeEnvironment
@@ -81,32 +82,28 @@ Define three folders for the current merge project.
   if ($BasePath -ne '')
   {
     $BasePath = (Get-Item $BasePath).FullName
-    [Environment]::SetEnvironmentVariable("MergeEnv_Base", $BasePath, "User")
-    #setUserEnvVar("MergeEnv_Base", $BasePath)  # This doesn't work. I don't know why.
-    Write-Verbose (msgUserEnvVarSetTo($script:ME_BASE))
+    setUserEnvVar $script:ME_BASE $BasePath
+    Write-Verbose (msgUserEnvVarSetTo $script:ME_BASE)
   }
   if ($SourcePath -ne '')
   {
     $SourcePath = (Get-Item $SourcePath).FullName
-    [Environment]::SetEnvironmentVariable("MergeEnv_Source", $SourcePath, "User")
-    #setUserEnvVar("MergeEnv_Source", $SourcePath)  # This doesn't work. I don't know why.
-    Write-Verbose (msgUserEnvVarSetTo($script:ME_SOURCE))
+    setUserEnvVar $script:ME_SOURCE $SourcePath
+    Write-Verbose (msgUserEnvVarSetTo $script:ME_SOURCE)
   }
   if ($TargetPath -ne '')
   {
     $TargetPath = (Get-Item $TargetPath).FullName
-    [Environment]::SetEnvironmentVariable("MergeEnv_Target", $TargetPath, "User")
-    #setUserEnvVar("MergeEnv_Target", $TargetPath)  # This doesn't work. I don't know why.
-    Write-Verbose (msgUserEnvVarSetTo($script:ME_TARGET))
+    setUserEnvVar $script:ME_TARGET $TargetPath
+    Write-Verbose (msgUserEnvVarSetTo $script:ME_TARGET)
   }
 }
 
 function Clear-MergeEnvironment
 {
-  [Environment]::SetEnvironmentVariable("MergeEnv_Base", $null, "User")
-  [Environment]::SetEnvironmentVariable("MergeEnv_Source", $null, "User")
-  [Environment]::SetEnvironmentVariable("MergeEnv_Target", $null, "User")
-  Show-MergeEnvironment
+  setUserEnvVar $script:ME_BASE $null  
+  setUserEnvVar $script:ME_SOURCE $null  
+  setUserEnvVar $script:ME_TARGET $null  
 }
 
 function Set-MergeTool ($Executable)
@@ -114,7 +111,7 @@ function Set-MergeTool ($Executable)
   # The user may only specify a file.
   $null = Test-Path $Executable -PathType Leaf -ErrorAction Stop
   $Executable = Get-Item $Executable
-  [Environment]::SetEnvironmentVariable("MergeEnv_MergeTool", $Executable, "User")
+  setUserEnvVar "MergeEnv_MergeTool" $Executable
 }
 
 function Start-MergeSession ($File)
