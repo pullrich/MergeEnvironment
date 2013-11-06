@@ -33,10 +33,6 @@ Display the current setup of the merge environment.
 
 .DESCRIPTION
 This Cmdlet simply displays the current setup of the merge environment.
-For this it will print the values of the following user environment variables:
-  MergeEnv_Base
-  MergeEnv_Source
-  MergeEnv_Target
 
 "Base" usually contains the current customer source code.
 "Source" usually contains the source code which has to be merged into the customer version.
@@ -44,9 +40,21 @@ For this it will print the values of the following user environment variables:
 #>
 
   Write-Host "Current merge environment:"
-  Write-Host "Base  : " (getUserEnvVar $script:ME_BASE)
-  Write-Host "Source: " (getUserEnvVar $script:ME_SOURCE)
-  Write-Host "Target: " (getUserEnvVar $script:ME_TARGET)
+  
+  Write-Host "Base"
+  Write-Host ("-Path: " + (getUserEnvVar $script:ME_BASE))
+  Write-Host ("-UserEnvironmentVariable: " + $script:ME_BASE)
+  Write-Host
+  
+  Write-Host "Source" 
+  Write-Host ("-Path: " + (getUserEnvVar $script:ME_SOURCE))
+  Write-Host ("-UserEnvironmentVariable: " + $script:ME_SOURCE)
+  Write-Host
+
+  Write-Host "Target" 
+  Write-Host ("-Path: " + (getUserEnvVar $script:ME_TARGET))
+  Write-Host ("-UserEnvironmentVariable: " + $script:ME_TARGET)
+  Write-Host
 }
 
 function Set-MergeEnvironment
@@ -184,7 +192,7 @@ New-Alias -Name stopms -Value Stop-MergeSession
 New-Alias -Name ems -Value Stop-MergeSession -Description "End-MergeSession; Alternative zu Stop-MergeSession"
 
 Export-ModuleMember `
-  -Function *Merge*, setUserEnvVar, getUserEnvVar -Alias * -Cmdlet *
+  -Function *Merge* -Alias * -Cmdlet *
 
 
 # Run stuff on Import-Module
