@@ -1,4 +1,5 @@
-﻿$script:ME_BASE = "MergeEnv_Base"
+﻿#Requires -Version 3.0
+$script:ME_BASE = "MergeEnv_Base"
 $script:ME_SOURCE = "MergeEnv_Source"
 $script:ME_TARGET = "MergeEnv_Target"
 
@@ -55,6 +56,8 @@ This Cmdlet simply displays the current setup of the merge environment.
   Write-Host ("-Path: " + (getUserEnvVar $script:ME_TARGET))
   Write-Host ("-UserEnvironmentVariable: " + $script:ME_TARGET)
   Write-Host
+  
+  #TODO: Add merge tool info
 }
 
 function Set-MergeEnvironment
@@ -122,8 +125,13 @@ function Set-MergeTool ($Executable)
   setUserEnvVar "MergeEnv_MergeTool" $Executable
 }
 
-function Start-MergeSession ($File)
+function Start-MergeSession
 {
+  [CmdletBinding()]
+  param(
+    $Filename
+  )
+  
   # Do not continue if it seems like a merge is currently in process.
   $currentlyMerging = [Environment]::GetEnvironmentVariable("MergeEnv_CurrentlyMerging", "User")
   
@@ -141,25 +149,41 @@ function Start-MergeSession ($File)
   }
   
   
-  # TODO: Check that $File exists in Base and Source folder.
+  # Check that the file exists in Base and Source folder.
+  $basePath = Join-Path -Path (getUserEnvVar $script:ME_BASE) -ChildPath $Filename
+  Write-Verbose -Message "Base path: $basePath"
+  $sourcePath = Join-Path -Path (getUserEnvVar $script:ME_SOURCE) -ChildPath $Filename
+  Write-Verbose -Message "Source path: $sourcePath"
+  $baseFile = Get-Item $basePath -ErrorAction Stop
+  Write-Verbose -Message "Base file exists: $baseFile"
+  $sourceFile = Get-Item $sourcePath -ErrorAction Stop
+  Write-Verbose -Message "Source file exists: $sourceFile"
   
-  $File = Get-Item $File -ErrorAction Stop
-  $outputDir = [Environment]::GetEnvironmentVariable("MergeEnv_Target", "User")
+  $outputDir = (getUserEnvVar $script:ME_TARGET)
+  $null = Test-Path -Path $outputDir -PathType Container -ErrorAction Stop
+  Write-Verbose -Message "Output directory exists: $outputDir"
   
-  # Only continue if output directory does exist.
-  $null = Test-Path $outputDir -PathType Container -ErrorAction Stop
+  Write-Debug "Pre-checks successful."
   
-  # Copy base file to output directory and prepend a "!".
-  $fileToReceiveMerge = Join-Path $outputDir "!$($File.Name)"
-  Copy-Item $File $fileToReceiveMerge
+  $newFileName = "!" + (Split-Path -Path $basePath -Leaf)
+  Write-Verbose -Message "New file name: $newFileName"
+  
+  $fileToReceiveMerge = Join-Path $outputDir $newFileName
+  Write-Verbose -Message "Output path to copy to will be: $fileToReceiveMerge"
+  
+  Write-Debug -Message "Next the file will be copied."
+  Copy-Item $baseFile $fileToReceiveMerge
+  
   [Environment]::SetEnvironmentVariable("MergeEnv_CurrentlyMerging", $fileToReceiveMerge, "User")
 
-  $mergeSourceDir = [Environment]::GetEnvironmentVariable("MergeEnv_Source", "User")
   $mergeTool = [Environment]::GetEnvironmentVariable("MergeEnv_MergeTool", "User")
+  
+  Write-Debug -Message "Next the merge tool will be launched."
+  & "$mergeTool" $fileToReceiveMerge $sourceFile
 
-  # Open merge tool with files.
-  & "$mergeTool" $fileToReceiveMerge "$mergeSourceDir\$($File.Name)"
 }
+
+# Idee: "Cancel"-MergeSession
 
 function Stop-MergeSession
 {
