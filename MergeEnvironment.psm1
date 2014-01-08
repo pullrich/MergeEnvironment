@@ -2,6 +2,7 @@
 $script:ME_BASE = "MergeEnv_Base"
 $script:ME_SOURCE = "MergeEnv_Source"
 $script:ME_TARGET = "MergeEnv_Target"
+$script:ME_MERGING = "MergeEnv_CurrentlyMerging"
 
 
 
@@ -189,23 +190,38 @@ function Stop-MergeSession
 {
   [CmdletBinding()]
   param ()
+
+  $currentlyMerging = getUserEnvVar $script:ME_MERGING
   
-  $currentlyMerging = [Environment]::GetEnvironmentVariable("MergeEnv_CurrentlyMerging", "User")
-  if ($currentlyMerging -ne $null)
+  if ($currentlyMerging -eq $null)
   {
-    if (Test-Path -Path $currentlyMerging -PathType Leaf -ErrorAction Stop)
-    {
-      $currentlyMerging = Get-Item $currentlyMerging
-      
-      # Clear merge marker from file name.
-      if ($currentlyMerging.Name -like "!*")
-      {
-        Write-Verbose "Clearing merge marker from file name."
-        Rename-Item -Path $currentlyMerging -NewName $currentlyMerging.Name.TrimStart("!")
-        [Environment]::SetEnvironmentVariable("MergeEnv_CurrentlyMerging", $null, "User")
-      }
-    }
+    return
   }
+  
+  if (-not (Test-Path -Path $currentlyMerging -PathType Leaf))
+  {
+    return
+  }
+  
+  $currentlyMerging = Get-Item -Path $currentlyMerging -ErrorAction Stop
+  Write-Verbose -Message "Currently merging: $currentlyMerging"
+
+  if (-not ($currentlyMerging.Name -like "!*"))
+  {
+    return
+  }
+  
+  $newName = $currentlyMerging.Name.TrimStart("!")
+  Write-Verbose -Message "New name: $newName"
+  
+  Write-Debug "Pre-checks successful."
+
+  Write-Verbose "Clearing merge marker from file name."
+  Rename-Item -Path $currentlyMerging -NewName $newName -ErrorAction Stop
+  
+  Write-Debug -Message "Next the environment variable containing the path to the currently merged file will be removed."
+  setUserEnvVar $script:ME_MERGING $null
+
 }
 
 
