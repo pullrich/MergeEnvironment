@@ -3,6 +3,7 @@ $script:ME_BASE = "MergeEnv_Base"
 $script:ME_SOURCE = "MergeEnv_Source"
 $script:ME_TARGET = "MergeEnv_Target"
 $script:ME_MERGING = "MergeEnv_CurrentlyMerging"
+$script:ME_TOOL = "MergeEnv_MergeTool"
 
 
 
@@ -72,21 +73,21 @@ Define three folders for the current merge project.
     [Parameter(Mandatory=$false,
                ValueFromPipeline=$false,
                Position=0)]
-    [ValidateScript({Test-Path $_ -PathType 'Container'})]
+    [ValidateScript({Test-Path -Path $_ -PathType 'Container'})]
     [string]
     $BasePath,
     
     [Parameter(Mandatory=$false,
                ValueFromPipeline=$false,
                Position=1)]
-    [ValidateScript({Test-Path $_ -PathType 'Container'})]
+    [ValidateScript({Test-Path -Path $_ -PathType 'Container'})]
     [string]
     $SourcePath,
     
     [Parameter(Mandatory=$false,
                ValueFromPipeline=$false,
                Position=2)]
-    [ValidateScript({Test-Path $_ -PathType 'Container'})]
+    [ValidateScript({Test-Path -Path $_ -PathType 'Container'})]
     [string]
     $TargetPath
   )
@@ -134,7 +135,7 @@ function Start-MergeSession
   )
   
   # Do not continue if it seems like a merge is currently in process.
-  $currentlyMerging = [Environment]::GetEnvironmentVariable("MergeEnv_CurrentlyMerging", "User")
+  $currentlyMerging = getUserEnvVar $script:ME_MERGING
   
   if ($currentlyMerging -ne $null)
   {
@@ -145,7 +146,7 @@ function Start-MergeSession
     }
     else
     {
-      [Environment]::SetEnvironmentVariable("MergeEnv_CurrentlyMerging", $null, "User")
+      setUserEnvVar $script:ME_MERGING $null
     }
   }
   
@@ -182,6 +183,23 @@ function Start-MergeSession
   Write-Debug -Message "Next the merge tool will be launched."
   & "$mergeTool" $fileToReceiveMerge $sourceFile
 
+}
+
+function Start-RevisionMergeSession
+{
+  [CmdletBinding()]
+  param(
+    $Filename
+  )
+  
+  $sourcePath = Join-Path -Path (getUserEnvVar $script:ME_SOURCE) -ChildPath $Filename
+  $sourceFile = Get-Item $sourcePath -ErrorAction Stop
+
+  $mergedPath = Join-Path -Path (getUserEnvVar $script:ME_TARGET) -ChildPath $Filename
+  $mergedFile = Get-Item $mergedPath -ErrorAction Stop
+
+  $mergeTool = getUserEnvVar $script:ME_TOOL
+  & "$mergeTool" $mergedFile $sourceFile
 }
 
 # Idee: "Cancel"-MergeSession
@@ -230,11 +248,8 @@ New-Alias -Name startms -Value Start-MergeSession
 New-Alias -Name sms -Value Start-MergeSession -Description "Start-MergeSession"
 New-Alias -Name stopms -Value Stop-MergeSession
 New-Alias -Name ems -Value Stop-MergeSession -Description "End-MergeSession; Alternative zu Stop-MergeSession"
+New-Alias -Name rev -Value Start-RevisionMergeSession
 
 Export-ModuleMember `
   -Function *Merge* -Alias * -Cmdlet *
-
-
-# Run stuff on Import-Module
-Show-MergeEnvironment
   
