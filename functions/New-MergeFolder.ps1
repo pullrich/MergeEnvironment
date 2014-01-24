@@ -1,16 +1,16 @@
 ﻿<#
 .SYNOPSIS
-Erzeugt Unterordner für ein Merge-Projekt.
+Creates a directory structure for a merge project.
 
 .DESCRIPTION
-Dieses Script erzeugt im aktuellen Ordner folgende Unterordnerstruktur:
-  .\Merge
-      1_KundeAktuell
-        EinzelneObjekte
-      2_MergeQuelle
-        EinzelneObjekte
+This script creates the follwing directory structure in the current working directory:
+  .\Merge< - Topic>
+      0_Setup
+      1_CurrentVersion
+      2_MergeSource
       3_Merged
-        EinzelneObjekte
+      4_Packaging
+
 #>
 function New-MergeFolder
 {
@@ -18,10 +18,15 @@ function New-MergeFolder
     [string]$Topic
   )
   
-  $rootFolder = "Merge - $Topic" 
+  $rootFolder = "Merge"
+  if ($Topic)
+  {
+    $rootFolder = $rootFolder + " - $Topic"
+  }
  
-  #$ErrorActionPreference = [System.Management.Automation.ActionPreference]::Continue
-  New-Item -ItemType directory -Path ".\$rootFolder\1_KundeAktuell\EinzelneObjekte"
-  New-Item -ItemType directory -Path ".\$rootFolder\2_MergeQuelle\EinzelneObjekte"
-  New-Item -ItemType directory -Path ".\$rootFolder\3_Merged\EinzelneObjekte"
+  New-Item -ItemType directory -Path ".\$rootFolder\0_Setup"
+  New-Item -ItemType directory -Path ".\$rootFolder\1_CurrentVersion"
+  New-Item -ItemType directory -Path ".\$rootFolder\2_MergeSource"
+  New-Item -ItemType directory -Path ".\$rootFolder\3_Merged"
+  New-Item -ItemType directory -Path ".\$rootFolder\4_Packaging"
 }
