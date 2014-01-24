@@ -26,6 +26,9 @@ function msgUserEnvVarSetTo([string]$varName)
 
 #endregion
 
+# IMPORT
+$modulePath = (Split-Path -parent $MyInvocation.MyCommand.Definition)
+. $modulePath\functions\New-MergeFolder.ps1
 
 
 function Show-MergeEnvironment
