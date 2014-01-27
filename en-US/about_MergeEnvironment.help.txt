@@ -1,10 +1,10 @@
 ﻿TOPIC
-PoshMergeMaid
+        PoshMergeMaid
 
 SYNOPSIS
-PoshMergeMaid is a toolbox to assist in manually merging files.
+        PoshMergeMaid is a toolbox to assist in manually merging files.
 
 DESCRIPTION
-PoshMergeMaid provides functions to asist you in setting up your merge 
-tool and opening the correct files in it. It automates a certain 
-workflow. 
+        PoshMergeMaid provides functions to asist you in setting up your merge 
+        tool and opening the correct files in it. It automates a certain 
+        workflow. 
