@@ -30,6 +30,7 @@ function msgUserEnvVarSetTo([string]$varName)
 $modulePath = (Split-Path -parent $MyInvocation.MyCommand.Definition)
 . $modulePath\functions\New-MergeFolder.ps1
 . $modulePath\functions\Show-MergeEnvironment.ps1
+. $modulePath\functions\Clear-MergeTool.ps1
 
 
 
