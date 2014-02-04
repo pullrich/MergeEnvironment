@@ -31,7 +31,8 @@ $modulePath = (Split-Path -parent $MyInvocation.MyCommand.Definition)
 . $modulePath\functions\New-MergeFolder.ps1
 . $modulePath\functions\Show-MergeEnvironment.ps1
 . $modulePath\functions\Clear-MergeTool.ps1
-. $modulePath\functions\Set-MergeEnvironment
+. $modulePath\functions\Set-MergeEnvironment.ps1
+. $modulePath\functions\Join-CALTextfiles.ps1
 
 function Clear-MergeEnvironment
 {
@@ -171,6 +172,6 @@ New-Alias -Name stopms -Value Stop-MergeSession
 New-Alias -Name ems -Value Stop-MergeSession -Description "End-MergeSession; Alternative zu Stop-MergeSession"
 New-Alias -Name rev -Value Start-RevisionMergeSession
 
-Export-ModuleMember `
-  -Function *Merge* -Alias * -Cmdlet *
+Export-ModuleMember -Function *Merge* -Alias * -Cmdlet *
+Export-ModuleMember -Function Join-CALTextfiles
   
