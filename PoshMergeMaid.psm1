@@ -29,7 +29,7 @@ function msgUserEnvVarSetTo([string]$varName)
 # IMPORT
 $modulePath = (Split-Path -parent $MyInvocation.MyCommand.Definition)
 . $modulePath\functions\New-MergeFolder.ps1
-. $modulePath\functions\Show-MergeEnvironment.ps1
+. $modulePath\functions\Get-MergeEnvironment.ps1
 . $modulePath\functions\Clear-MergeTool.ps1
 . $modulePath\functions\Set-MergeEnvironment.ps1
 . $modulePath\functions\Join-CALTextfiles.ps1
