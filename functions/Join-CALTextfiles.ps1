@@ -16,17 +16,23 @@
   {
     foreach ($ObjectType in $ObjectTypes)
     {
+      $output = "$OutputPath\$($ObjectType)s_ALL_MERGED.txt"
       Get-ChildItem "$InputPath\$ObjectType*.txt" | 
       Get-Content -Encoding Oem | 
-      Set-Content "$OutputPath\$($ObjectType)s_ALL_MERGED.txt" -Encoding Oem
+      Set-Content $output -Encoding Oem
+      
+      Get-Item $output
     }
   }
 
   if (($Behavoir -eq "All") -or ($Behavoir -eq "SingleFile"))
   {
+    $output = "$OutputPath\ALL_MERGED.txt"
     Get-ChildItem "$InputPath\*.txt" |
     sort |
     Get-Content -Encoding Oem |
-    Set-Content "$OutputPath\ALL_MERGED.txt" -Encoding Oem
+    Set-Content $output -Encoding Oem
+    
+    Get-Item $output
   }
 }
